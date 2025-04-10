@@ -28,9 +28,9 @@ CREATE TABLE lager (
 
 CREATE TABLE raum (
   raum_nr INT UNSIGNED NOT NULL, -- raum nummern sind unique pro lager. etage ist nur eine Zusatzinfo.
+  lager_nr INT UNSIGNED NOT NULL,  -- lager in dem sich der raum befindet
   etage INT UNSIGNED NOT NULL, 
   groesse INT UNSIGNED NOT NULL, -- todo: oe?? bessere bezeichnung?
-  lager_nr INT UNSIGNED NOT NULL,  -- lager in dem sich der raum befindet
   PRIMARY KEY (raum_nr, lager_nr),  -- pk der weak entity, nur in kombination mit lager
   FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr) ON DELETE CASCADE 
 );
@@ -47,10 +47,10 @@ CREATE TABLE artikel_raum (
     lager_nr INT UNSIGNED,
     artikel_nr INT UNSIGNED,
     anzahl INT UNSIGNED,
-    FOREIGN KEY (raum_nr) REFERENCES raum(raum_nr),
-    FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr)
-    FOREIGN KEY (artikel_nr) REFERENCES artikel(artikel_nr)
-    PRIMARY KEY (artikel_nr, raum_nr, lager_nr),  -- zussammengesetzter pk
+    FOREIGN KEY (raum_nr, lager_nr) REFERENCES raum(raum_nr, lager_nr),
+    FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr),
+    FOREIGN KEY (artikel_nr) REFERENCES artikel(artikel_nr),
+    PRIMARY KEY (artikel_nr, raum_nr, lager_nr)  -- zussammengesetzter pk
 );
 
 CREATE TABLE bestellung_artikel (
@@ -71,7 +71,6 @@ CREATE TABLE kategorie (
 
 CREATE TABLE kunde (
   kunde_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   rechnungs_adresse_id INT UNSIGNED, -- todo: required? then need to save address first, or use lieferaddr as default??
   firmen_kunde BOOLEAN NOT NULL DEFAULT FALSE, -- to make queries for eg. name easier based on kunde_nr
   status_vip BOOLEAN NOT NULL DEFAULT FALSE, -- todo: could rm, used only because of 3 attributes requirement
