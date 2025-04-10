@@ -90,7 +90,4 @@ CREATE TABLE firmenkunde (
   FOREIGN KEY (kunde_nr) REFERENCES kunde(kunde_nr) ON DELETE CASCADE
 );
 
-
--- todo: artikel lager relation
-
 -- docker cp ./12134101_SCHORT_create.sql mariadb-container:/tmp/create1.sql
