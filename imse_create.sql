@@ -14,8 +14,10 @@ CREATE TABLE adresse (
 
 CREATE TABLE bestellung (
     bestell_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    kunde_nr INT UNSIGNED,
     datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     liefer_adresse_id INT UNSIGNED NOT NULL,
+    FOREIGN KEY (kunde_nr) REFERENCES kunde(kunde_nr)
     FOREIGN KEY (liefer_adresse_id) REFERENCES adresse(adresse_id)
 );
 
@@ -37,9 +39,10 @@ CREATE TABLE raum (
 
 CREATE TABLE artikel (
     artikel_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    kategorie_nr INT UNSIGNED,
     bezeichnung VARCHAR(50) NOT NULL,
     preis_cent INT UNSIGNED NOT NULL,
-    datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (kategorie_nr) REFERENCES kategorie(kategorie_nr),
 );
 
 CREATE TABLE artikel_raum (
