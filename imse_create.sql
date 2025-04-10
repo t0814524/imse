@@ -27,11 +27,11 @@ CREATE TABLE lager (
 );
 
 CREATE TABLE raum (
-  raum_nr INT UNSIGNED NOT NULL, 
+  raum_nr INT UNSIGNED NOT NULL, -- raum nummern sind unique pro lager. etage ist nur eine Zusatzinfo.
   etage INT UNSIGNED NOT NULL, 
   groesse INT UNSIGNED NOT NULL, -- todo: oe?? bessere bezeichnung?
   lager_nr INT UNSIGNED NOT NULL,  -- lager in dem sich der raum befindet
-  PRIMARY KEY (raum_nr, etage, lager_nr),  -- pk der weak entity, nur in kombination mit lager
+  PRIMARY KEY (raum_nr, lager_nr),  -- pk der weak entity, nur in kombination mit lager
   FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr) ON DELETE CASCADE 
 );
 
@@ -44,11 +44,13 @@ CREATE TABLE artikel (
 
 CREATE TABLE artikel_raum (
     raum_nr INT UNSIGNED,
+    lager_nr INT UNSIGNED,
     artikel_nr INT UNSIGNED,
     anzahl INT UNSIGNED,
     FOREIGN KEY (raum_nr) REFERENCES raum(raum_nr),
+    FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr)
     FOREIGN KEY (artikel_nr) REFERENCES artikel(artikel_nr)
-    PRIMARY KEY (artikel_nr, raum_nr),  -- zussammengesetzter pk
+    PRIMARY KEY (artikel_nr, raum_nr, lager_nr),  -- zussammengesetzter pk
 );
 
 CREATE TABLE bestellung_artikel (
