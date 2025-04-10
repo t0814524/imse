@@ -18,7 +18,8 @@ services:
       # Where our data will be persisted
     volumes:
       - mariadb_volume:/var/lib/mysql
-      - ./imse_create.sql:/docker-entrypoint-initdb.d/imse_create.sql
+      # - ./imse_create.sql:/docker-entrypoint-initdb.d/imse_create.sql
+      - ./sql:/docker-entrypoint-initdb.d/sql
 
 # Names our volume
 volumes:
