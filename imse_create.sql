@@ -9,7 +9,6 @@ CREATE TABLE adresse (
     stadt VARCHAR(50) NOT NULL,
     strasse VARCHAR(50) NOT NULL,
     haus_nr VARCHAR(50) NOT NULL, -- use string in case of stiege / tuer, etc.
-    datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (land, stadt, strasse, haus_nr)  -- keine duplicate adressen
 );
 
@@ -41,6 +40,15 @@ CREATE TABLE artikel (
     bezeichnung VARCHAR(50) NOT NULL,
     preis_cent INT UNSIGNED NOT NULL,
     datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE artikel_raum (
+    raum_nr INT UNSIGNED,
+    artikel_nr INT UNSIGNED,
+    anzahl INT UNSIGNED,
+    FOREIGN KEY (raum_nr) REFERENCES raum(raum_nr),
+    FOREIGN KEY (artikel_nr) REFERENCES artikel(artikel_nr)
+    PRIMARY KEY (artikel_nr, raum_nr),  -- zussammengesetzter pk
 );
 
 CREATE TABLE bestellung_artikel (
