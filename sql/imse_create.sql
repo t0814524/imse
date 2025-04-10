@@ -12,17 +12,25 @@ CREATE TABLE adresse (
     UNIQUE (land, stadt, strasse, haus_nr)  -- keine duplicate adressen
 );
 
+CREATE TABLE kunde (
+  kunde_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  rechnungs_adresse_id INT UNSIGNED, -- todo: required? then need to save address first, or use lieferaddr as default??
+  firmen_kunde BOOLEAN NOT NULL DEFAULT FALSE, -- to make queries for eg. name easier based on kunde_nr
+  status_vip BOOLEAN NOT NULL DEFAULT FALSE, -- todo: could rm, used only because of 3 attributes requirement
+  FOREIGN KEY (rechnungs_adresse_id) REFERENCES adresse(adresse_id)
+);
+
 CREATE TABLE bestellung (
     bestell_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     kunde_nr INT UNSIGNED,
     datum DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     liefer_adresse_id INT UNSIGNED NOT NULL,
-    FOREIGN KEY (kunde_nr) REFERENCES kunde(kunde_nr)
+    FOREIGN KEY (kunde_nr) REFERENCES kunde(kunde_nr),
     FOREIGN KEY (liefer_adresse_id) REFERENCES adresse(adresse_id)
 );
 
 CREATE TABLE lager (
-  lager_nr INT UNSIGNED PRIMARY KEY, 
+  lager_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
   lager_adresse_id INT UNSIGNED UNIQUE,
   raum_anzahl INT UNSIGNED NOT NULL, 
   FOREIGN KEY (lager_adresse_id) REFERENCES adresse(adresse_id)
@@ -37,12 +45,20 @@ CREATE TABLE raum (
   FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr) ON DELETE CASCADE 
 );
 
+CREATE TABLE kategorie (
+    kategorie_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    ueber_kategorie INT UNSIGNED,
+    bezeichnung VARCHAR(50) NOT NULL,
+    color_code VARCHAR(50),
+    FOREIGN KEY (ueber_kategorie) REFERENCES kategorie(kategorie_nr)
+);
+
 CREATE TABLE artikel (
     artikel_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     kategorie_nr INT UNSIGNED,
     bezeichnung VARCHAR(50) NOT NULL,
     preis_cent INT UNSIGNED NOT NULL,
-    FOREIGN KEY (kategorie_nr) REFERENCES kategorie(kategorie_nr),
+    FOREIGN KEY (kategorie_nr) REFERENCES kategorie(kategorie_nr)
 );
 
 CREATE TABLE artikel_raum (
@@ -62,22 +78,6 @@ CREATE TABLE bestellung_artikel (
     artikel_nr INT UNSIGNED,
     FOREIGN KEY (bestell_nr) REFERENCES bestellung(bestell_nr),
     FOREIGN KEY (artikel_nr) REFERENCES artikel(artikel_nr)
-);
-
-CREATE TABLE kategorie (
-    kategorie_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    ueber_kategorie INT UNSIGNED,
-    bezeichnung VARCHAR(50) NOT NULL,
-    color_code VARCHAR(50),
-    FOREIGN KEY (ueber_kategorie) REFERENCES kategorie(kategorie_nr)
-);
-
-CREATE TABLE kunde (
-  kunde_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  rechnungs_adresse_id INT UNSIGNED, -- todo: required? then need to save address first, or use lieferaddr as default??
-  firmen_kunde BOOLEAN NOT NULL DEFAULT FALSE, -- to make queries for eg. name easier based on kunde_nr
-  status_vip BOOLEAN NOT NULL DEFAULT FALSE, -- todo: could rm, used only because of 3 attributes requirement
-  FOREIGN KEY (rechnungs_adresse_id) REFERENCES adresse(adresse_id)
 );
 
 CREATE TABLE privatkunde (
