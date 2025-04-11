@@ -1,0 +1,49 @@
+{
+    "kategorie": {
+        "kategorie_nr": "Int",
+        "ueber_kategorie": "ObjectID(Int)", // rekursive referenz auf kategorie
+        "bezeichnung": "String",
+        "color_code": "String",
+    },
+    "artikel": {
+        "artikel_nr": "Int",
+        "kategorie": "ObjectID(Int)", // referenz auf kategorie
+        "bezeichnung": "String",
+        "preis_cent": "Int",
+    },
+    "adresse": { // seperate adresse, redundanz vermeiden bei z.b. bestellung
+        "adresse_id": "Int",
+        "land": "String",
+        "stadt": "String",
+        "strasse": "String",
+        "haus_nr": "String"
+    },
+    "kunde": {
+        "kunde_nr": "Int",
+        "rechnungs_addresse": "ObjectID(Int)", // referenz zu adresse
+        "status_vip": "Bool",
+        "is_firmenkunde": "Bool", // abhängig von dem flag, firmen/privatkunde befüllen
+        "firmenkunde": { // nested in kunde, einfacher als is-a in sql
+            "steuer_nr": "String",
+            "firmen_name": "String"
+        },
+        "privatkunde": {
+            "vorname": "String",
+            "nachname": "String"
+        },
+        "bestellungen": [ // array mit bestellungen
+            {
+                "bestell_nr": "Int",
+                // "kunde_nr": "ObjectID(Int)", // nicht notwendig, da bestellungen direkt in kunde
+                "datum": "Date",
+                "liefer_adresse": "ObjectID(Int)", // referenz zu adresse
+                "artikel": [ // array mit bestellten artikeln und anzahl
+                    {
+                        "artikel": "ObjectID(Int)", // referenz auf artikel
+                        "anzahl": "Int"
+                    }
+                ]
+            }
+        ]
+    }
+}

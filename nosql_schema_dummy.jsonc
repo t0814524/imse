@@ -1,0 +1,59 @@
+{
+    "kategorie": {
+        "kategorie_nr": 1,
+        "ueber_kategorie": "60d5f3f1bcf86e6d53f2b63f",
+        "bezeichnung": "Electronics",
+        "color_code": "#FF5733"
+    },
+    "artikel": {
+        "artikel_nr": 101,
+        "kategorie": "60d5f3f1bcf86e6d53f2wert",
+        "bezeichnung": "Smartphone",
+        "preis_cent": 49999
+    },
+    "adresse": {
+        "adresse_id": 1,
+        "land": "Deutschland",
+        "stadt": "Berlin",
+        "strasse": "Musterstr.",
+        "haus_nr": "12B"
+    },
+    "kunde": {
+        "kunde_nr": 1001,
+        "rechnungs_addresse": "60d5f3f1bcf86e6d53f2w34w",
+        "status_vip": true,
+        "is_firmenkunde": true,
+        "firmenkunde": {
+            "steuer_nr": "DE123456789",
+            "firmen_name": "TechCorp GmbH"
+        },
+        "bestellungen": [
+            {
+                "bestell_nr": 5001,
+                "datum": "2025-04-10T15:30:00Z",
+                "liefer_adresse": "60d5f3f1bcf86e6d53f2w34w",
+                "artikel": [
+                    {
+                        "artikel": "60d5f3f1bcf86e6d53f2363f",
+                        "anzahl": 2
+                    },
+                    {
+                        "artikel": "60d5f3f1bcf86ekif3f2b640",
+                        "anzahl": 1
+                    }
+                ]
+            },
+            {
+                "bestell_nr": 5002,
+                "datum": "2025-04-11T10:00:00Z",
+                "liefer_adresse": "60d5f3f159f86e6d53f2b641",
+                "artikel": [
+                    {
+                        "artikel": "60d5f3f1bcf8p06d53f2b63f",
+                        "anzahl": 1
+                    }
+                ]
+            }
+        ]
+    }
+}
