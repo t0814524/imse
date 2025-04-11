@@ -14,9 +14,9 @@ CREATE TABLE adresse (
 
 CREATE TABLE kunde (
   kunde_nr INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  rechnungs_adresse_id INT UNSIGNED, -- todo: required? then need to save address first, or use lieferaddr as default??
+  rechnungs_adresse_id INT UNSIGNED,
   firmen_kunde BOOLEAN NOT NULL DEFAULT FALSE, -- to make queries for eg. name easier based on kunde_nr
-  status_vip BOOLEAN NOT NULL DEFAULT FALSE, -- todo: could rm, used only because of 3 attributes requirement
+  status_vip BOOLEAN NOT NULL DEFAULT FALSE, 
   FOREIGN KEY (rechnungs_adresse_id) REFERENCES adresse(adresse_id)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE raum (
   raum_nr INT UNSIGNED NOT NULL, -- raum nummern sind unique pro lager. etage ist nur eine Zusatzinfo.
   lager_nr INT UNSIGNED NOT NULL,  -- lager in dem sich der raum befindet
   etage INT UNSIGNED NOT NULL, 
-  groesse INT UNSIGNED NOT NULL, -- todo: oe?? bessere bezeichnung?
+  groesse INT UNSIGNED NOT NULL, 
   PRIMARY KEY (raum_nr, lager_nr),  -- pk der weak entity, nur in kombination mit lager
   FOREIGN KEY (lager_nr) REFERENCES lager(lager_nr) ON DELETE CASCADE 
 );
