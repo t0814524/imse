@@ -37,7 +37,7 @@ def dummy_data2():
     import mysql.connector
 
     mydb = mysql.connector.connect(
-        host="mariadb1",
+        host="mariadb",
         port=3306,
         user="user",
         password="password",
