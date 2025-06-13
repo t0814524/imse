@@ -16,8 +16,8 @@ def dummy_data():
         conn = mariadb.connect(
             user="root",
             password="password",
-            host="mariadb",
-            port=3306,
+            host="localhost",
+            port=3333,
             database="db"
 
         )
@@ -37,8 +37,8 @@ def dummy_data2():
     import mysql.connector
 
     mydb = mysql.connector.connect(
-        host="mariadb1",
-        port=3306,
+        host="localhost",
+        port=3333,
         user="user",
         password="password",
         database="db"
