@@ -1,7 +1,8 @@
 version: "3.3"
 services:
   mariadb:
-    image: mariadb:latest
+    # image: mariadb:latest
+    image: mariadb:10.5
     restart: always
     container_name: mariadb1
     environment:
@@ -9,6 +10,7 @@ services:
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
+    command: --default-authentication-plugin=mysql_native_password # https://github.com/docker-library/mysql/issues/419 maybe works on linux vm or specific mysql image should be used? todo: check docker tutorial or assignment
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - "3306:3306"
@@ -20,8 +22,33 @@ services:
       - mariadb_volume:/var/lib/mysql
       # - ./imse_create.sql:/docker-entrypoint-initdb.d/imse_create.sql
       - ./sql:/docker-entrypoint-initdb.d/sql
+      - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+    networks:
+      - app-network
+
+  flask-app:
+    build:
+      context: . # The build context is the root of the project (since flask app is inside demo/server)
+      dockerfile: demo/server/Dockerfile # Explicitly set the Dockerfile location
+    container_name: flask-app
+    environment:
+      MYSQL_HOST: mariadb # This tells Flask to connect to the mariadb container by service name
+      MYSQL_PORT: 3306
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: db
+    ports:
+      - "5000:5000" # Expose Flask app on port 5000
+    depends_on:
+      - mariadb # Ensures MariaDB starts before Flask
+    networks:
+      - app-network
 
 # Names our volume
 volumes:
   mariadb_volume:
 # source ./docker-entrypoint-initdb.d/sql/imse_create.sql
+
+networks:
+  app-network:
+    driver: bridge
