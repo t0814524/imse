@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 @app.route("/dummy-data")
 def dummy_data():
+    print("dummy1")
     # Module Imports
     import mariadb
     import sys
