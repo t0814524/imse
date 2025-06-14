@@ -250,8 +250,8 @@ def get_billing_address():
         conn.close()
 
 
-@app.route("/dummy-data2")
-def dummy_data2():
+@app.route("/dummy-data")
+def dummy_data():
     print("creating dummy data")
     # res = create_or_replace_dummy_data()
     path_delete_data_sql = "../../sql/delete_data.sql"

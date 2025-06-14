@@ -1,20 +1,167 @@
 <!doctype html>
-
 <html lang="en">
 
 <head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- basic styles -->
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IMSE Admin Dashboard</title>
 
-  <title>IMSE</title>
+  <!-- Embedded CSS -->
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    /* Body Styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 40px;
+    }
+
+    /* Container Styles */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    /* Header Styles */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    /* Navigation Styles */
+    nav {
+      margin-bottom: 30px;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin-bottom: 15px;
+    }
+
+    nav ul li a {
+      display: block;
+      text-decoration: none;
+      color: #2980b9;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 12px;
+      border-radius: 5px;
+      background-color: #ecf0f1;
+      transition: background-color 0.3s, color 0.3s, transform 0.2s ease;
+      text-align: center;
+    }
+
+    nav ul li a:hover {
+      background-color: #2980b9;
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    nav ul li a:active {
+      transform: translateY(1px);
+    }
+
+    /* Notification Box Styles */
+    .notification {
+      padding: 12px;
+      background-color: #27ae60;
+      color: white;
+      border-radius: 5px;
+      font-size: 1rem;
+      text-align: center;
+      display: none;
+    }
+
+    .notification.hidden {
+      display: none;
+    }
+
+    .notification:not(.hidden) {
+      display: block;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      header h1 {
+        font-size: 1.6rem;
+      }
+
+      nav ul li a {
+        font-size: 1rem;
+        padding: 10px;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
-  <script type="module" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
-  <div id="article-grid" class="grid"></div>
+  <!-- Main Container -->
+  <div class="container">
+    <header>
+      <h1>Welcome to IMSE Admin Dashboard</h1>
+    </header>
 
+    <nav>
+      <ul>
+        <li><a href="/articles">View Articles</a></li>
+        <li><a href="/user-info">User Information</a></li>
+        <li><a href="#" id="create-dummy-data">Create/Replace Dummy Data</a></li>
+      </ul>
+    </nav>
+
+    <!-- Notification Box (optional) -->
+    <div id="notification" class="notification hidden">
+      Data has been created/updated successfully!
+    </div>
+  </div>
+
+  <script type="module" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+
+  <script>
+    // Handle "Create/Replace Dummy Data" click event
+    document.getElementById('create-dummy-data').addEventListener('click', async () => {
+      let res = await fetch('http://localhost:5555/dummy-data');
+      const result = await res.text();
+      console.log(result);
+
+      // Show notification to the user
+      const notification = document.getElementById('notification');
+      notification.textContent = 'Dummy data has been created/updated successfully!';
+      notification.classList.remove('hidden');
+
+      // Hide notification after 3 seconds
+      setTimeout(() => notification.classList.add('hidden'), 3000);
+    });
+  </script>
 </body>
 
 </html>

@@ -2,21 +2,39 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- basic styles -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
         }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+
+
+
+
+
 
         .container {
             max-width: 800px;
             margin: 20px auto;
-            padding: 20px;
+            /* padding: 20px; */
+
         }
 
         .address-box,
@@ -45,7 +63,9 @@
 </head>
 
 <body>
-
+    <header>
+        <div class="logo">IMSE Shop</div>
+    </header>
     <div class="container">
         <h1>Checkout</h1>
 
@@ -56,34 +76,36 @@
 
             <button type="button" id="edit-billing-btn">Edit Billing Address</button>
         </div>
+        <main>
 
-        <!-- Delivery Address (optional) -->
-        <div class="address-box" id="delivery-address-box" style="display: none;">
-            <h3>Delivery Address (Lieferadresse)</h3>
-            <div class="form-group">
-                <label for="land">Land:</label>
-                <input type="text" id="land">
+            <!-- Delivery Address (optional) -->
+            <div class="address-box" id="delivery-address-box" style="display: none;">
+                <h3>Delivery Address (Lieferadresse)</h3>
+                <div class="form-group">
+                    <label for="land">Land:</label>
+                    <input type="text" id="land">
+                </div>
+                <div class="form-group">
+                    <label for="stadt">Stadt:</label>
+                    <input type="text" id="stadt">
+                </div>
+                <div class="form-group">
+                    <label for="strasse">Strasse:</label>
+                    <input type="text" id="strasse">
+                </div>
+                <div class="form-group">
+                    <label for="haus_nr">Hausnummer:</label>
+                    <input type="text" id="haus_nr">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="stadt">Stadt:</label>
-                <input type="text" id="stadt">
-            </div>
-            <div class="form-group">
-                <label for="strasse">Strasse:</label>
-                <input type="text" id="strasse">
-            </div>
-            <div class="form-group">
-                <label for="haus_nr">Hausnummer:</label>
-                <input type="text" id="haus_nr">
-            </div>
-        </div>
 
-        <label for="use-billing-as-delivery">
-            <input type="checkbox" id="use-billing-as-delivery" checked> Use billing address for delivery address
-        </label>
+            <label for="use-billing-as-delivery">
+                <input type="checkbox" id="use-billing-as-delivery" checked> Use billing address for delivery address
+            </label>
 
-        <button type="submit" id="place-order-btn">Place Order</button>
+            <button type="submit" id="place-order-btn">Place Order</button>
     </div>
+    </main>
 
     <script>
         // On page load, fetch the billing address

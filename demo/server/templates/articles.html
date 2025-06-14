@@ -4,24 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Article Shop</title>
+  <title>IMSE Shop</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- basic styles -->
+
   <style>
-    /* Basic Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* General Styles */
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      background-color: #f4f4f4;
-      padding-top: 60px;
-      /* Space for header */
-    }
-
     header {
       background-color: #333;
       color: #fff;
@@ -31,8 +17,6 @@
       width: 100%;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      z-index: 100;
     }
 
     header .logo {
@@ -78,9 +62,9 @@
 
     /* Article Grid */
     .article-grid {
+      gap: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
       padding: 20px;
     }
 
@@ -91,11 +75,7 @@
       overflow: hidden;
       text-align: center;
       padding: 15px;
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .card:hover {
-      transform: translateY(-10px);
+      /* transition: transform 0.3s ease-in-out; */
     }
 
     .card h2 {
@@ -131,15 +111,13 @@
 
 <body>
   <header>
-    <div class="logo">Article Shop</div>
+    <div class="logo">IMSE Shop</div>
     <div id="cart-icon" class="cart-icon">
       🛒 <span id="cart-count">0</span> Items
     </div>
   </header>
 
-  <main>
-    <div id="article-grid" class="article-grid"></div>
-  </main>
+  <div id="article-grid" class="article-grid"></div>
 
   <div id="cart-preview" class="cart-preview">
     <h3>Your Cart</h3>
@@ -148,7 +126,7 @@
   </div>
 
   <script>
-    // Fetch Articles
+    // fetch articles
     async function fetchArticles() {
       try {
         const response = await fetch("http://localhost:5555/api/articles");
@@ -163,13 +141,14 @@
       }
     }
 
-    // Render Articles in the Grid
+    // render articles in grid
     function renderArticles(articles) {
       const grid = document.getElementById("article-grid");
       if (!grid) return;
 
-      grid.innerHTML = ""; // Clear previous items
+      grid.innerHTML = "";
 
+      // create card for each article
       for (const article of articles) {
         const card = document.createElement("div");
         card.className = "card";
@@ -192,15 +171,14 @@
       }
     }
 
-    // Add Article to Cart
+    // add articles to cart
     function addToCart(article) {
       let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-      // Check if item already exists in the cart
+      // increase cnt if already in cart
       const existingItem = cart.find((item) => item.artikel_id === article.artikel_id);
 
       if (existingItem) {
-        // If item exists, increase quantity
         existingItem.quantity += 1;
       } else {
         // If item doesn't exist, add it to the cart with quantity 1
@@ -212,34 +190,33 @@
         });
       }
 
-      // Save the updated cart to localStorage
+      // save updated cart to localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
     }
 
-    // Update Cart Item Count in the Cart Icon
+    // itemcnt next to cart
     function updateCartCount() {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+      const cartCount = cart.reduce((total, item) => total + item.quantity, 0); // like that bc only cnt is stored not multiple articles
       document.getElementById("cart-count").textContent = cartCount;
     }
 
-    // Show Cart Preview
+    //cart preview
     document.getElementById("cart-icon").onclick = function () {
       const cartPreview = document.getElementById("cart-preview");
       cartPreview.style.display = (cartPreview.style.display === "none" || cartPreview.style.display === "") ? "block" : "none";
       displayCart();
     }
 
-    // Display Items in Cart
+    // display items in cart
     function displayCart() {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       const cartItemsContainer = document.getElementById("cart-items");
 
-      if (!cartItemsContainer) return;
+      cartItemsContainer.innerHTML = ""; // clear
 
-      cartItemsContainer.innerHTML = ""; // Clear previous items
-
+      // empty caret
       if (cart.length === 0) {
         cartItemsContainer.innerHTML = "<p>Your cart is empty!</p>";
         return;
@@ -252,43 +229,23 @@
       });
     }
 
-    // Checkout Function
+    // checkout
     async function checkout() {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]"); // get from localstorage
 
       if (cart.length === 0) {
         alert("Your cart is empty!");
         return;
       }
 
-      try {
-        const response = await fetch("http://localhost:5555/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(cart),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to place the order");
-        }
-
-        // Clear the cart after successful checkout
-        localStorage.removeItem("cart");
-        alert("Order placed successfully!");
-        updateCartCount();
-        displayCart();
-      } catch (err) {
-        console.error("Error during checkout:", err);
-        alert("Something went wrong during checkout.");
-      }
+      // go to checkout page
+      window.location.href = '/checkout';
     }
 
-    // Call fetchArticles on page load
+    // on page load get all the artcles and fill grid
     fetchArticles();
 
-    // Initial cart count
+    // initialize cart with stored session
     updateCartCount();
   </script>
 </body>
