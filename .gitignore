@@ -6,4 +6,5 @@ IMSE MS1 2025S.pdf
 m1_abgabe.zip
 demo/server/static/js/bundle.js
 demo/server/static/js/bundle.js.map
-demo/server/__pycache__/dummy_data.cpython-310.pyc
+demo/server/__pycache__/
+demo/server/flask_session/

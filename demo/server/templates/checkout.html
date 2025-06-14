@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .address-box,
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Checkout</h1>
+
+        <!-- Billing Address -->
+        <div class="address-box" id="billing-address-box">
+            <h3>Billing Address (Rechnungsadresse)</h3>
+            <p id="billing-address">Loading...</p> <!-- Display current billing address -->
+
+            <button type="button" id="edit-billing-btn">Edit Billing Address</button>
+        </div>
+
+        <!-- Delivery Address (optional) -->
+        <div class="address-box" id="delivery-address-box" style="display: none;">
+            <h3>Delivery Address (Lieferadresse)</h3>
+            <div class="form-group">
+                <label for="land">Land:</label>
+                <input type="text" id="land">
+            </div>
+            <div class="form-group">
+                <label for="stadt">Stadt:</label>
+                <input type="text" id="stadt">
+            </div>
+            <div class="form-group">
+                <label for="strasse">Strasse:</label>
+                <input type="text" id="strasse">
+            </div>
+            <div class="form-group">
+                <label for="haus_nr">Hausnummer:</label>
+                <input type="text" id="haus_nr">
+            </div>
+        </div>
+
+        <label for="use-billing-as-delivery">
+            <input type="checkbox" id="use-billing-as-delivery" checked> Use billing address for delivery address
+        </label>
+
+        <button type="submit" id="place-order-btn">Place Order</button>
+    </div>
+
+    <script>
+        // On page load, fetch the billing address
+        window.onload = () => {
+            fetch('/api/get_billing_address')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('billing-address').innerText = `${data.land}, ${data.stadt}, ${data.strasse}, ${data.haus_nr}`;
+                });
+        };
+
+        // Toggle between using billing address or providing a new delivery address
+        document.getElementById('use-billing-as-delivery').addEventListener('change', function () {
+            document.getElementById('delivery-address-box').style.display = this.checked ? 'none' : 'block';
+        });
+
+        // Edit the billing address
+        document.getElementById('edit-billing-btn').addEventListener('click', () => {
+            const billingFields = document.getElementById('billing-address').innerText.split(', ').map((field, i) => {
+                return `<input type="text" id="edit-${['land', 'stadt', 'strasse', 'haus_nr'][i]}" value="${field}" />`;
+            }).join('');
+
+            document.getElementById('billing-address').innerHTML = billingFields;
+            document.getElementById('edit-billing-btn').innerText = 'Save Billing Address';
+            document.getElementById('edit-billing-btn').onclick = saveBillingAddress;
+        });
+
+        // Save the edited billing address
+        function saveBillingAddress() {
+            const updatedAddress = {
+                land: document.getElementById('edit-land').value,
+                stadt: document.getElementById('edit-stadt').value,
+                strasse: document.getElementById('edit-strasse').value,
+                haus_nr: document.getElementById('edit-haus_nr').value,
+            };
+
+            fetch('/api/update_billing_address', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedAddress),
+            }).then(() => {
+                alert('Billing address updated!');
+                window.location.reload();
+            });
+        }
+
+        // Place the order
+        document.getElementById('place-order-btn').addEventListener('click', () => {
+            const useBillingAsDelivery = document.getElementById('use-billing-as-delivery').checked;
+            let liefer_adresse_id = null; // todo: rn only using billing addr is impl. null is filled w default in py: checkout
+
+            // if (!useBillingAsDelivery) {
+            //     // If not using billing, collect the delivery address details
+            //     liefer_adresse_id = {
+            //         land: document.getElementById('land').value,
+            //         stadt: document.getElementById('stadt').value,
+            //         strasse: document.getElementById('strasse').value,
+            //         haus_nr: document.getElementById('haus_nr').value
+            //     };
+            // }
+
+            const cart = JSON.parse(localStorage.getItem("cart")) || []; // get cart from local storage
+
+
+            fetch('/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cart: cart,
+                    // liefer_adresse_id: liefer_adresse_id
+                })
+            }).then(res => res.json())
+                .then(data => alert(data.message));
+        });
+    </script>
+
+</body>
+
+</html>

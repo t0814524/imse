@@ -95,3 +95,20 @@ CREATE TABLE firmenkunde (
 );
 
 -- docker cp ./12134101_SCHORT_create.sql mariadb-container:/tmp/create1.sql
+
+
+-- Artikeluebersicht
+
+CREATE VIEW view_all_articles AS
+SELECT 
+    a.artikel_nr AS artikel_id,
+    a.bezeichnung AS artikel_name,
+    k.bezeichnung AS category_name,
+    a.preis_cent AS price_in_cents,
+    ar.anzahl AS available_stock
+FROM 
+    artikel a
+JOIN 
+    kategorie k ON a.kategorie_nr = k.kategorie_nr
+JOIN 
+    artikel_raum ar ON a.artikel_nr = ar.artikel_nr;

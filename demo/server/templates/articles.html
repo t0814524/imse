@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article Shop</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      padding-top: 60px;
+      /* Space for header */
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 15px 20px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    header .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .cart-icon {
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .cart-preview {
+      position: fixed;
+      top: 70px;
+      right: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+      display: none;
+    }
+
+    .cart-preview h3 {
+      margin-bottom: 10px;
+    }
+
+    .cart-preview button {
+      background-color: #28a745;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .cart-preview button:hover {
+      background-color: #218838;
+    }
+
+    /* Article Grid */
+    .article-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: center;
+      padding: 15px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      margin-bottom: 10px;
+    }
+
+    .card .price {
+      font-weight: bold;
+      color: #28a745;
+    }
+
+    .card button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    .card button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">Article Shop</div>
+    <div id="cart-icon" class="cart-icon">
+      🛒 <span id="cart-count">0</span> Items
+    </div>
+  </header>
+
+  <main>
+    <div id="article-grid" class="article-grid"></div>
+  </main>
+
+  <div id="cart-preview" class="cart-preview">
+    <h3>Your Cart</h3>
+    <div id="cart-items"></div>
+    <button onclick="checkout()">Checkout</button>
+  </div>
+
+  <script>
+    // Fetch Articles
+    async function fetchArticles() {
+      try {
+        const response = await fetch("http://localhost:5555/api/articles");
+        if (!response.ok) {
+          throw new Error("Failed to fetch articles");
+        }
+
+        const articles = await response.json();
+        renderArticles(articles);
+      } catch (err) {
+        console.error("Error fetching articles:", err);
+      }
+    }
+
+    // Render Articles in the Grid
+    function renderArticles(articles) {
+      const grid = document.getElementById("article-grid");
+      if (!grid) return;
+
+      grid.innerHTML = ""; // Clear previous items
+
+      for (const article of articles) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+                    <h2>${article.artikel_name}</h2>
+                    <p><strong>Category:</strong> ${article.category_name}</p>
+                    <p class="price">€ ${(article.price_in_cents / 100).toFixed(2)}</p>
+                    <p class="stock">In stock: ${article.available_stock}</p>
+                `;
+
+        const button = document.createElement("button");
+        button.textContent = "Add to Cart";
+        button.onclick = () => {
+          addToCart(article);
+        };
+
+        card.appendChild(button);
+        grid.appendChild(card);
+      }
+    }
+
+    // Add Article to Cart
+    function addToCart(article) {
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      // Check if item already exists in the cart
+      const existingItem = cart.find((item) => item.artikel_id === article.artikel_id);
+
+      if (existingItem) {
+        // If item exists, increase quantity
+        existingItem.quantity += 1;
+      } else {
+        // If item doesn't exist, add it to the cart with quantity 1
+        cart.push({
+          artikel_id: article.artikel_id,
+          artikel_name: article.artikel_name,
+          price_in_cents: article.price_in_cents,
+          quantity: 1
+        });
+      }
+
+      // Save the updated cart to localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+    }
+
+    // Update Cart Item Count in the Cart Icon
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+      document.getElementById("cart-count").textContent = cartCount;
+    }
+
+    // Show Cart Preview
+    document.getElementById("cart-icon").onclick = function () {
+      const cartPreview = document.getElementById("cart-preview");
+      cartPreview.style.display = (cartPreview.style.display === "none" || cartPreview.style.display === "") ? "block" : "none";
+      displayCart();
+    }
+
+    // Display Items in Cart
+    function displayCart() {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const cartItemsContainer = document.getElementById("cart-items");
+
+      if (!cartItemsContainer) return;
+
+      cartItemsContainer.innerHTML = ""; // Clear previous items
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = "<p>Your cart is empty!</p>";
+        return;
+      }
+
+      cart.forEach(item => {
+        const cartItem = document.createElement("div");
+        cartItem.innerHTML = `${item.artikel_name} - € ${(item.price_in_cents / 100).toFixed(2)} x ${item.quantity}`;
+        cartItemsContainer.appendChild(cartItem);
+      });
+    }
+
+    // Checkout Function
+    async function checkout() {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5555/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cart),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to place the order");
+        }
+
+        // Clear the cart after successful checkout
+        localStorage.removeItem("cart");
+        alert("Order placed successfully!");
+        updateCartCount();
+        displayCart();
+      } catch (err) {
+        console.error("Error during checkout:", err);
+        alert("Something went wrong during checkout.");
+      }
+    }
+
+    // Call fetchArticles on page load
+    fetchArticles();
+
+    // Initial cart count
+    updateCartCount();
+  </script>
+</body>
+
+</html>

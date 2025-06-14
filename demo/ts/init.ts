@@ -1,3 +1,5 @@
+import { displayCart, fetchArticles } from "./articles"
+
 console.log("init.ts loaded.")
 
 let createDummyDataDiv = document.createElement("div")
@@ -19,3 +21,5 @@ createDummyDataDiv2.addEventListener('click', async () => {
 });
 
 
+fetchArticles()
+displayCart()

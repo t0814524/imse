@@ -128,7 +128,7 @@ VALUES (@kunde3, 'Max', 'Mustermann');
 -- Bestellungen:
 -- Kunde 1:
 INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
-VALUES (@kunde1, @lager_addr1);  -- use Lager address as shipping address
+VALUES (@kunde1, @lager_addr1); 
 SET @bestell1 = LAST_INSERT_ID();
 INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
 VALUES (@bestell1, @art1),
@@ -141,12 +141,11 @@ SET @bestell2 = LAST_INSERT_ID();
 INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
 VALUES (@bestell2, @art5);
 
---Kunde 3:
+-- Kunde 3:
 INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
 VALUES (@kunde3, @lager_addr3);
 SET @bestell3 = LAST_INSERT_ID();
 INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
-VALUES (@bestell3, @art2),
-       (@bestell3, @art4),
-       (@bestell3, @art6);
+VALUES (@bestell3, @art2), (@bestell3, @art4),(@bestell3, @art6);
+
 COMMIT;

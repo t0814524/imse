@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Registration</title>
+</head>
+
+<body>
+  <h1>Customer Registration Form</h1>
+  <form id="registrationForm">
+    <!-- Address Information -->
+    <fieldset>
+      <legend>Address Information</legend>
+      <label for="land">Country:</label>
+      <input type="text" id="land" name="land" required><br><br>
+
+      <label for="stadt">City:</label>
+      <input type="text" id="stadt" name="stadt" required><br><br>
+
+      <label for="strasse">Street:</label>
+      <input type="text" id="strasse" name="strasse" required><br><br>
+
+      <label for="haus_nr">House Number:</label>
+      <input type="text" id="haus_nr" name="haus_nr" required><br><br>
+    </fieldset>
+
+    <!-- Customer Information -->
+    <fieldset>
+      <legend>Customer Information</legend>
+      <label for="vorname">First Name:</label>
+      <input type="text" id="vorname" name="vorname" required><br><br>
+
+      <label for="nachname">Last Name:</label>
+      <input type="text" id="nachname" name="nachname" required><br><br>
+
+      <label for="firmen_kunde">Is this a company customer?</label>
+      <input type="checkbox" id="firmen_kunde" name="firmen_kunde"><br><br>
+
+      <label for="status_vip">VIP Customer?</label>
+      <input type="checkbox" id="status_vip" name="status_vip"><br><br>
+    </fieldset>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const vorname = document.getElementById('vorname').value;
+      const nachname = document.getElementById('nachname').value;
+      const land = document.getElementById('land').value;
+      const stadt = document.getElementById('stadt').value;
+      const strasse = document.getElementById('strasse').value;
+      const haus_nr = document.getElementById('haus_nr').value;
+
+      // Extract the checkbox values (default to false if unchecked)
+      const firmen_kunde = document.getElementById('firmen_kunde').checked;
+      const status_vip = document.getElementById('status_vip').checked;
+
+      const customerData = {
+        vorname,
+        nachname,
+        land,
+        stadt,
+        strasse,
+        haus_nr,
+        firmen_kunde,
+        status_vip
+      };
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(customerData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Customer registered successfully!');
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>
