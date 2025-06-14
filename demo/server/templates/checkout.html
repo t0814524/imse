@@ -24,12 +24,6 @@
             font-weight: bold;
         }
 
-
-
-
-
-
-
         .container {
             max-width: 800px;
             margin: 20px auto;
@@ -59,6 +53,41 @@
         button:hover {
             background-color: #45a049;
         }
+
+        /* order summary style: */
+
+        /* Order summary styles */
+        .order-summary {
+            margin-bottom: 20px;
+        }
+
+        .order-summary h3 {
+            margin-bottom: 10px;
+        }
+
+        .order-summary ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .order-summary li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .order-summary li .name {
+            font-weight: bold;
+        }
+
+        .order-summary li .price {
+            color: #4CAF50;
+        }
+
+        .total-price {
+            font-weight: bold;
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -69,6 +98,13 @@
     <div class="container">
         <h1>Checkout</h1>
 
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h3>Your Order</h3>
+            <ul id="order-items-list"></ul>
+            <p class="total-price" id="total-price">Total: € 0.00</p>
+        </div>
+
         <!-- Billing Address -->
         <div class="address-box" id="billing-address-box">
             <h3>Billing Address (Rechnungsadresse)</h3>
@@ -76,36 +112,34 @@
 
             <button type="button" id="edit-billing-btn">Edit Billing Address</button>
         </div>
-        <main>
 
-            <!-- Delivery Address (optional) -->
-            <div class="address-box" id="delivery-address-box" style="display: none;">
-                <h3>Delivery Address (Lieferadresse)</h3>
-                <div class="form-group">
-                    <label for="land">Land:</label>
-                    <input type="text" id="land">
-                </div>
-                <div class="form-group">
-                    <label for="stadt">Stadt:</label>
-                    <input type="text" id="stadt">
-                </div>
-                <div class="form-group">
-                    <label for="strasse">Strasse:</label>
-                    <input type="text" id="strasse">
-                </div>
-                <div class="form-group">
-                    <label for="haus_nr">Hausnummer:</label>
-                    <input type="text" id="haus_nr">
-                </div>
+        <!-- Delivery Address (optional) -->
+        <div class="address-box" id="delivery-address-box" style="display: none;">
+            <h3>Delivery Address (Lieferadresse)</h3>
+            <div class="form-group">
+                <label for="land">Land:</label>
+                <input type="text" id="land">
             </div>
+            <div class="form-group">
+                <label for="stadt">Stadt:</label>
+                <input type="text" id="stadt">
+            </div>
+            <div class="form-group">
+                <label for="strasse">Strasse:</label>
+                <input type="text" id="strasse">
+            </div>
+            <div class="form-group">
+                <label for="haus_nr">Hausnummer:</label>
+                <input type="text" id="haus_nr">
+            </div>
+        </div>
 
-            <label for="use-billing-as-delivery">
-                <input type="checkbox" id="use-billing-as-delivery" checked> Use billing address for delivery address
-            </label>
+        <label for="use-billing-as-delivery">
+            <input type="checkbox" id="use-billing-as-delivery" checked> Use billing address for delivery address
+        </label>
 
-            <button type="submit" id="place-order-btn">Place Order</button>
+        <button type="submit" id="place-order-btn">Place Order</button>
     </div>
-    </main>
 
     <script>
         // On page load, fetch the billing address
@@ -115,6 +149,8 @@
                 .then(data => {
                     document.getElementById('billing-address').innerText = `${data.land}, ${data.stadt}, ${data.strasse}, ${data.haus_nr}`;
                 });
+
+            displayOrderItems(); // Display the order items on page load
         };
 
         // Toggle between using billing address or providing a new delivery address
@@ -169,7 +205,6 @@
 
             const cart = JSON.parse(localStorage.getItem("cart")) || []; // get cart from local storage
 
-
             fetch('/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -177,9 +212,36 @@
                     cart: cart,
                     // liefer_adresse_id: liefer_adresse_id
                 })
-            }).then(res => res.json())
-                .then(data => alert(data.message));
+            }).then(async res => {
+                if (res.ok) {
+                    localStorage.removeItem("cart"); // clear cart after checkout
+                    let data = await res.json()
+                    alert(data.message)
+                }
+            })
         });
+
+        // Function to display the cart items on the checkout page
+        function displayOrderItems() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const orderItemsList = document.getElementById("order-items-list");
+            const totalPriceElem = document.getElementById("total-price");
+
+            let totalPrice = 0;
+            orderItemsList.innerHTML = ""; // Clear the list before adding new items
+
+            cart.forEach(item => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <span class="name">${item.artikel_name} - € ${(item.price_in_cents / 100).toFixed(2)} x ${item.quantity}</span>
+                    <span class="price">€ ${((item.price_in_cents * item.quantity) / 100).toFixed(2)}</span>
+                `;
+                orderItemsList.appendChild(listItem);
+                totalPrice += (item.price_in_cents * item.quantity);
+            });
+
+            totalPriceElem.textContent = `Total: € ${(totalPrice / 100).toFixed(2)}`;
+        }
     </script>
 
 </body>
