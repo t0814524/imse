@@ -156,6 +156,13 @@ def checkout():
     print(session)
     user_id = session.get('user_id')
     rechnungs_adresse_id = session.get('rechnungs_adresse_id')
+    # clear session on dummy data creation to avoid bug here
+    # try:
+    #     addr = get_billing_address()  # check here if the addr can be fetched otherwise user likely is not logged in or the db got cleared
+    #     print(addr.json())
+    # except Exception as e:
+    #     print(e)
+    #     return redirect('/register')  # redirect to login page if no session data, for now to register page
 
     if not user_id or not rechnungs_adresse_id:
         return redirect('/register')  # redirect to login page if no session data, for now to register page
@@ -242,7 +249,6 @@ def get_billing_address():
 
         if not address:
             return jsonify({"error": "Billing address not found"}), 404
-
         return jsonify(address)
 
     except Exception as e:
@@ -254,12 +260,13 @@ def get_billing_address():
 
 @app.route("/dummy-data")
 def dummy_data():
-    print("creating dummy data")
+    print("creating dummy dataa")
     # res = create_or_replace_dummy_data()
     path_delete_data_sql = "../../sql/delete_data.sql"
     path_create_dummy_data_sql = "../../sql/create_dummy_data.sql"
     execute_sql_script(path_delete_data_sql)
     execute_sql_script(path_create_dummy_data_sql)
+    session.clear()
 
     # print(mydb)
     # execute_sql_script("../../sql/create_dummy_data.sql")  # todo: other path inside container

@@ -154,6 +154,7 @@
       let res = await fetch('http://localhost:5555/dummy-data');
       const result = await res.text();
       console.log(result);
+      localStorage.clear() // clear basket to avoid issues with changed db
 
       // Show notification to the user
       const notification = document.getElementById('notification');
