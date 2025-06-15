@@ -2,12 +2,17 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- basic styles -->
   <title>Customer Registration</title>
 </head>
 
 <body>
+  <header>
+    <div><a href="/" class="logo">IMSE Shop</a></div>
+    <div id="header-headline">
+      Registration
+    </div>
+  </header>
   <h1>Customer Registration Form</h1>
   <form id="registrationForm">
     <!-- Address Information -->

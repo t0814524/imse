@@ -158,7 +158,7 @@ def checkout():
     rechnungs_adresse_id = session.get('rechnungs_adresse_id')
 
     if not user_id or not rechnungs_adresse_id:
-        return redirect('/login')  # Redirect to login page if no session data
+        return redirect('/register')  # redirect to login page if no session data, for now to register page
 
     if request.method == 'POST':
         # If the user provides a different delivery address
@@ -272,6 +272,38 @@ def _migrate():
     print("migrate data")
     migrate()
     return "created/replaced dummmy data"
+
+
+@app.route('/report', methods=['GET'])
+def get_report():
+    file_path = "../../sql/report.sql"
+    with open(file_path, 'r') as file:
+        query = file.read()
+
+        # this line somehow is an issue in the query if i read it from report.sql:
+        # SET @filter_date = '2025-04-01';
+
+        query_lines = query.splitlines()
+        query_without_set = "\n".join(query_lines[1:])  # remove first line (set filter)
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            filter_date = '2025-04-01'
+
+            # set filter date in seperate query otherwise it did not work when reading form file
+            cursor.execute(f"SET @filter_date = '{filter_date}';")
+
+            # print(query_without_set)
+            cursor.execute(query_without_set)
+            result = cursor.fetchall()
+            print(result)
+            return jsonify(result)
+        finally:
+            # Close the connection
+            cursor.close()
+            conn.close()
 
 
 # Route to get customer details

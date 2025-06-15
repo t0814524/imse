@@ -10,21 +10,6 @@
 
   <!-- Embedded CSS -->
   <style>
-    /* Basic Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Body Styles */
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
-      padding: 40px;
-    }
-
     /* Container Styles */
     .container {
       max-width: 900px;
@@ -35,18 +20,6 @@
       border-radius: 8px;
     }
 
-    /* Header Styles */
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      color: #333;
-      font-weight: 500;
-      margin-bottom: 20px;
-    }
 
     /* Navigation Styles */
     nav {
@@ -104,20 +77,21 @@
       display: block;
     }
 
-    /* Mobile Responsiveness */
-    @media (max-width: 600px) {
-      body {
-        padding: 20px;
-      }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-      header h1 {
-        font-size: 1.6rem;
-      }
+    table th,
+    table td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #2980b9;
+      /* Light gray border for visibility */
+    }
 
-      nav ul li a {
-        font-size: 1rem;
-        padding: 10px;
-      }
+    #report-section {
+      display: none;
     }
   </style>
 
@@ -125,10 +99,13 @@
 
 <body>
   <!-- Main Container -->
+  <header>
+    <div><a href="/" class="logo">IMSE Shop</a></div>
+    <div id="header-headline">
+      Admin Dashboard
+    </div>
+  </header>
   <div class="container">
-    <header>
-      <h1>Welcome to IMSE Admin Dashboard</h1>
-    </header>
 
     <nav>
       <ul>
@@ -136,12 +113,36 @@
         <li><a href="/register">Register as Customer</a></li>
         <li><a id="create-dummy-data">Create/Replace Dummy Data</a></li>
         <li><a id="migrate">Migrate data to NoSQL</a></li>
+        <li><a id="report">Report</a></li>
       </ul>
     </nav>
 
     <!-- Notification Box (optional) -->
     <div id="notification" class="notification hidden">
       Data has been created/updated successfully!
+    </div>
+
+    <div id="report-section">
+
+      <!-- Report Table -->
+      <h2>Order Report</h2>
+      <table id="report-table">
+        <thead>
+          <tr>
+            <th>Order Number</th>
+            <th>Order Date</th>
+            <th>Customer Number</th>
+            <th>Customer Name</th>
+            <th>Delivery City</th>
+            <th>Article Number</th>
+            <th>Article Description</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -172,6 +173,47 @@
       const notification = document.getElementById('notification');
       notification.textContent = 'Migration Successful!';
       notification.classList.remove('hidden');
+
+      // Hide notification after 3 seconds
+      setTimeout(() => notification.classList.add('hidden'), 3000);
+    });
+
+    document.getElementById('report').addEventListener('click', async () => {
+      let res = await fetch('http://localhost:5555/report');
+      const result = await res.json();
+      console.log(result);
+
+      // Get the table body element
+      const tableBody = document.querySelector("#report-table tbody");
+      const reportDiv = document.getElementById("report-section");
+      // Clear any existing rows
+      tableBody.innerHTML = '';
+
+      // Loop through the result and add rows to the table
+      for (row of result) {
+
+        const tr = document.createElement('tr');
+
+        // Create and append each cell in the row
+        tr.innerHTML = `
+          <td>${row.bestell_nr}</td>
+          <td>${new Date(row.datum).toLocaleString()}</td>
+          <td>${row.kunde_nr}</td>
+          <td>${row.kunde_name}</td>
+          <td>${row.liefer_stadt}</td>
+          <td>${row.artikel_nr}</td>
+          <td>${row.artikel_bezeichnung}</td>
+          <td>${row.kategorie}</td>
+          `;
+
+        // Append the row to the table body
+        tableBody.appendChild(tr);
+      }
+      // Show notification to the user
+      const notification = document.getElementById('notification');
+      notification.textContent = 'Report has been created!';
+      notification.classList.remove('hidden');
+      reportDiv.style.display = "block";
 
       // Hide notification after 3 seconds
       setTimeout(() => notification.classList.add('hidden'), 3000);
