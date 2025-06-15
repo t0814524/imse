@@ -7,7 +7,9 @@ from register import register_customer
 from db_config import get_connection
 from flask_session import Session
 import uuid
+from migrate import migrate
 
+import mongo
 
 app = Flask(__name__)
 # Set secret key for session management
@@ -262,6 +264,13 @@ def dummy_data():
     # print(mydb)
     # execute_sql_script("../../sql/create_dummy_data.sql")  # todo: other path inside container
 
+    return "created/replaced dummmy data"
+
+
+@app.route("/migrate")
+def _migrate():
+    print("migrate data")
+    migrate()
     return "created/replaced dummmy data"
 
 

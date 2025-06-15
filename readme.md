@@ -6,6 +6,7 @@ rebuild docker:
 ```
 docker-compose down
 docker volume rm imse_mariadb_volume
+docker volume rm imse_mongo_volume
 docker-compose up --build
 ```
 

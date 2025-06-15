@@ -134,7 +134,8 @@
       <ul>
         <li><a href="/articles">View Articles</a></li>
         <li><a href="/register">Register as Customer</a></li>
-        <li><a href="#" id="create-dummy-data">Create/Replace Dummy Data</a></li>
+        <li><a id="create-dummy-data">Create/Replace Dummy Data</a></li>
+        <li><a id="migrate">Migrate data to NoSQL</a></li>
       </ul>
     </nav>
 
@@ -156,6 +157,20 @@
       // Show notification to the user
       const notification = document.getElementById('notification');
       notification.textContent = 'Dummy data has been created/updated successfully!';
+      notification.classList.remove('hidden');
+
+      // Hide notification after 3 seconds
+      setTimeout(() => notification.classList.add('hidden'), 3000);
+    });
+
+    document.getElementById('migrate').addEventListener('click', async () => {
+      let res = await fetch('http://localhost:5555/migrate');
+      const result = await res.text();
+      console.log(result);
+
+      // Show notification to the user
+      const notification = document.getElementById('notification');
+      notification.textContent = 'Migration Successful!';
       notification.classList.remove('hidden');
 
       // Hide notification after 3 seconds

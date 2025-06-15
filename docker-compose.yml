@@ -44,10 +44,26 @@ services:
   #   networks:
   #     - app-network
 
-# Names our volume
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: mongo1
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27018:27017" # Expose MongoDB port
+    volumes:
+      - mongo_volume:/data/db # Persist MongoDB data
+    networks:
+      - app-network
+
+# Volumes to persist data for MariaDB and MongoDB
 volumes:
   mariadb_volume:
-# source ./docker-entrypoint-initdb.d/sql/imse_create.sql
+  # source ./docker-entrypoint-initdb.d/sql/imse_create.sql
+  mongo_volume:
 
 networks:
   app-network:
