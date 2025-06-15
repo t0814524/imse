@@ -1,36 +1,34 @@
 from db_config import get_connection
-from flask import Flask, render_template, jsonify, request, session
+from flask import jsonify, session
 from mysql.connector import Error
 
 
 def register_customer(data):
     try:
         print(data)
-        # Open a connection to the database
+        # connect to db
         connection = get_connection()
         cursor = connection.cursor()
 
-        # Insert address into the adresse table (for the billing address)
+        # adresse
         cursor.execute("""
             INSERT INTO adresse (land, stadt, strasse, haus_nr)
             VALUES (%s, %s, %s, %s)
         """, (data['land'], data['stadt'], data['strasse'], data['haus_nr']))
         connection.commit()
 
-        # Get the address ID
         adresse_id = cursor.lastrowid
 
-        # Insert customer into the kunde table
+        # kunde
         cursor.execute("""
             INSERT INTO kunde (rechnungs_adresse_id, firmen_kunde, status_vip)
             VALUES (%s, %s, %s)
         """, (adresse_id, data['firmen_kunde'], data['status_vip']))
         connection.commit()
 
-        # Get the customer ID
         kunde_id = cursor.lastrowid
 
-        # If the customer is a business (firmen_kunde), insert into firmenkunde table
+        # check if firmenkunde
         if data['firmen_kunde']:
             cursor.execute("""
                 INSERT INTO firmenkunde (kunde_nr, firmen_name)
@@ -38,7 +36,7 @@ def register_customer(data):
             """, (kunde_id, data['business_name']))
             connection.commit()
 
-        # If the customer is an individual (not a business), insert into privatkunde table
+        # privatkunde
         else:
             cursor.execute("""
                 INSERT INTO privatkunde (kunde_nr, vorname, nachname)
@@ -46,7 +44,7 @@ def register_customer(data):
             """, (kunde_id, data['vorname'], data['nachname']))
             connection.commit()
 
-        # Store user information in the session
+        # store session, for checkout
         session['user_id'] = kunde_id
         session['rechnungs_adresse_id'] = adresse_id
 

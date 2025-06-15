@@ -15,7 +15,8 @@
   </header>
   <h1>Customer Registration Form</h1>
   <form id="registrationForm">
-    <!-- Address Information -->
+
+    <!-- address -->
     <fieldset>
       <legend>Address Information</legend>
       <label for="land">Country:</label>
@@ -31,7 +32,7 @@
       <input type="text" id="haus_nr" name="haus_nr" required><br><br>
     </fieldset>
 
-    <!-- Customer Information -->
+    <!-- customer info -->
     <fieldset>
       <legend>Customer Information</legend>
 
@@ -108,7 +109,6 @@
 
       const status_vip = document.getElementById('status_vip').checked;
 
-      // Collect customer data
       const customerData = {
         vorname: firmen_kunde.checked ? null : vorname.value, // assing depending on if business or private
         nachname: firmen_kunde.checked ? null : nachname.value,

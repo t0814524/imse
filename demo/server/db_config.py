@@ -1,6 +1,5 @@
 import mysql.connector
 
-
 db_config = {
     "host": "localhost",
     "port": 3333,

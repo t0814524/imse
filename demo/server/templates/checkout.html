@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
 
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- basic styles -->
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <style>
         header {
@@ -54,9 +51,6 @@
             background-color: #45a049;
         }
 
-        /* order summary style: */
-
-        /* Order summary styles */
         .order-summary {
             margin-bottom: 20px;
         }
@@ -98,14 +92,14 @@
     <div class="container">
         <h1>Checkout</h1>
 
-        <!-- Order Summary -->
+        <!-- order summary -->
         <div class="order-summary">
             <h3>Your Order</h3>
             <ul id="order-items-list"></ul>
             <p class="total-price" id="total-price">Total: € 0.00</p>
         </div>
 
-        <!-- Billing Address -->
+        <!-- billing address -->
         <div class="address-box" id="billing-address-box">
             <h3>Billing Address (Rechnungsadresse)</h3>
             <p id="billing-address">Loading...</p> <!-- Display current billing address -->
@@ -113,7 +107,7 @@
             <button type="button" id="edit-billing-btn">Edit Billing Address</button>
         </div>
 
-        <!-- Delivery Address (optional) -->
+        <!-- delivery address -->
         <div class="address-box" id="delivery-address-box" style="display: none;">
             <h3>Delivery Address (Lieferadresse)</h3>
             <div class="form-group">
@@ -150,15 +144,14 @@
                     document.getElementById('billing-address').innerText = `${data.land}, ${data.stadt}, ${data.strasse}, ${data.haus_nr}`;
                 });
 
-            displayOrderItems(); // Display the order items on page load
+            displayOrderItems(); // display ordered items
         };
 
-        // Toggle between using billing address or providing a new delivery address
         document.getElementById('use-billing-as-delivery').addEventListener('change', function () {
             document.getElementById('delivery-address-box').style.display = this.checked ? 'none' : 'block';
         });
 
-        // Edit the billing address
+        // edit billing address
         document.getElementById('edit-billing-btn').addEventListener('click', () => {
             const billingFields = document.getElementById('billing-address').innerText.split(', ').map((field, i) => {
                 return `<input type="text" id="edit-${['land', 'stadt', 'strasse', 'haus_nr'][i]}" value="${field}" />`;
@@ -169,7 +162,7 @@
             document.getElementById('edit-billing-btn').onclick = saveBillingAddress;
         });
 
-        // Save the edited billing address
+        // save the edited billing address
         function saveBillingAddress() {
             const updatedAddress = {
                 land: document.getElementById('edit-land').value,
@@ -178,7 +171,7 @@
                 haus_nr: document.getElementById('edit-haus_nr').value,
             };
 
-            fetch('/api/update_billing_address', {
+            fetch('/api/update_billing_address', { //not implemented
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedAddress),
@@ -188,20 +181,11 @@
             });
         }
 
-        // Place the order
+        // place order
         document.getElementById('place-order-btn').addEventListener('click', () => {
             const useBillingAsDelivery = document.getElementById('use-billing-as-delivery').checked;
             let liefer_adresse_id = null; // todo: rn only using billing addr is impl. null is filled w default in py: checkout
 
-            // if (!useBillingAsDelivery) {
-            //     // If not using billing, collect the delivery address details
-            //     liefer_adresse_id = {
-            //         land: document.getElementById('land').value,
-            //         stadt: document.getElementById('stadt').value,
-            //         strasse: document.getElementById('strasse').value,
-            //         haus_nr: document.getElementById('haus_nr').value
-            //     };
-            // }
 
             const cart = JSON.parse(localStorage.getItem("cart")) || []; // get cart from local storage
 
@@ -221,14 +205,14 @@
             })
         });
 
-        // Function to display the cart items on the checkout page
+        //display the ordered items on checkout page
         function displayOrderItems() {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             const orderItemsList = document.getElementById("order-items-list");
             const totalPriceElem = document.getElementById("total-price");
 
             let totalPrice = 0;
-            orderItemsList.innerHTML = ""; // Clear the list before adding new items
+            orderItemsList.innerHTML = "";
 
             cart.forEach(item => {
                 const listItem = document.createElement("li");
