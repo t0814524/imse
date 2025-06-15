@@ -34,14 +34,23 @@
     <!-- Customer Information -->
     <fieldset>
       <legend>Customer Information</legend>
-      <label for="vorname">First Name:</label>
-      <input type="text" id="vorname" name="vorname" required><br><br>
 
-      <label for="nachname">Last Name:</label>
-      <input type="text" id="nachname" name="nachname" required><br><br>
-
-      <label for="firmen_kunde">Is this a company customer?</label>
+      <label for="firmen_kunde">Business customer</label>
       <input type="checkbox" id="firmen_kunde" name="firmen_kunde"><br><br>
+
+      <!-- div to toggle between business name and vorname nachname -->
+      <div id="individualFields">
+        <label for="vorname">First Name:</label>
+        <input type="text" id="vorname" name="vorname"><br><br>
+
+        <label for="nachname">Last Name:</label>
+        <input type="text" id="nachname" name="nachname"><br><br>
+      </div>
+
+      <div id="businessNameField" style="display: none;">
+        <label for="business_name">Business Name:</label>
+        <input type="text" id="business_name" name="business_name"><br><br>
+      </div>
 
       <label for="status_vip">VIP Customer?</label>
       <input type="checkbox" id="status_vip" name="status_vip"><br><br>
@@ -52,29 +61,63 @@
 
   <script>
     const form = document.getElementById('registrationForm');
+    const firmen_kunde = document.getElementById('firmen_kunde');
+
+    // toggle vorname nachname / business name 
+    firmen_kunde.addEventListener('change', () => {
+      const individualFields = document.getElementById('individualFields');
+      const businessNameField = document.getElementById('businessNameField');
+      if (firmen_kunde.checked) {
+        individualFields.style.display = 'none';
+        businessNameField.style.display = 'block';
+      } else {
+        individualFields.style.display = 'block';
+        businessNameField.style.display = 'none';
+      }
+    });
 
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const firmen_kunde = document.getElementById('firmen_kunde');
+      const vorname = document.getElementById('vorname');
+      const nachname = document.getElementById('nachname');
+      const business_name = document.getElementById('business_name');
 
-      const vorname = document.getElementById('vorname').value;
-      const nachname = document.getElementById('nachname').value;
+      if (firmen_kunde.checked) {
+        // business customer
+        if (!business_name.value) {
+          alert("Please enter Business Name!");
+          return;
+        }
+      } else {
+        // private customer
+        if (!vorname.value) {
+          alert("Please enter First Name!");
+          return;
+        }
+        if (!nachname.value) {
+          alert("Please enter Last Name!");
+          return;
+        }
+      }
+
       const land = document.getElementById('land').value;
       const stadt = document.getElementById('stadt').value;
       const strasse = document.getElementById('strasse').value;
       const haus_nr = document.getElementById('haus_nr').value;
 
-      // Extract the checkbox values (default to false if unchecked)
-      const firmen_kunde = document.getElementById('firmen_kunde').checked;
       const status_vip = document.getElementById('status_vip').checked;
 
+      // Collect customer data
       const customerData = {
-        vorname,
-        nachname,
+        vorname: firmen_kunde.checked ? null : vorname.value, // assing depending on if business or private
+        nachname: firmen_kunde.checked ? null : nachname.value,
+        business_name: firmen_kunde.checked ? business_name.value : null,
         land,
         stadt,
         strasse,
         haus_nr,
-        firmen_kunde,
+        firmen_kunde: firmen_kunde.checked,
         status_vip
       };
 

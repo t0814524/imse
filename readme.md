@@ -25,3 +25,6 @@ cd demo/server
 venv/Scripts/activate
 python app.py
 ```
+
+report:
+source ./docker-entrypoint-initdb.d/sql/report.sql

@@ -77,79 +77,6 @@ def get_articles():
         connection.close()
 
 
-@app.route('/api/checkout', methods=['POST'])
-def checkout_api():
-    try:
-        cart = request.get_json()
-        print("cart")
-        print(cart)
-
-        # Ensure the cart is not empty
-        if not cart or len(cart) == 0:
-            return jsonify({"error": "Cart is empty!"}), 400
-
-        # Simulate a logged-in user; in a real app, use session or token
-        user_id = 1  # For demonstration, assuming the logged-in user's ID is 1
-
-        # Connect to the database
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        # Step 1: Validate delivery address (liefer_adresse_id)
-        liefer_adresse_id = cart[0].get('liefer_adresse_id')  # Assuming all items in cart share the same delivery address
-        print("sofar works todo")
-
-        if not liefer_adresse_id:
-            return jsonify({"error": "Missing or invalid delivery address."}), 400
-
-        # Step 2: Create a new order in the `bestellung` table
-        cursor.execute("""
-            INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
-            VALUES (%s, %s)
-        """, (user_id, liefer_adresse_id))
-
-        # Get the generated order number (bestell_nr)
-        bestell_nr = cursor.lastrowid
-
-        # Step 3: Insert items into the `bestellung_artikel` table
-        for item in cart:
-            artikel_id = item['artikel_id']
-            quantity = item['quantity']
-            price_in_cents = item['price_in_cents']
-
-            # Inserting each article into the order
-            cursor.execute("""
-                INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
-                VALUES (%s, %s)
-            """, (bestell_nr, artikel_id))
-
-            # Decrementing the stock for the article in the warehouse (artikel_raum)
-            cursor.execute("""
-                UPDATE artikel_raum
-                SET anzahl = anzahl - %s
-                WHERE artikel_nr = %s
-            """, (quantity, artikel_id))
-
-        # Commit the changes to the database
-        conn.commit()
-
-        # Return success response with the order ID
-        return jsonify({"message": "Order placed successfully!", "order_id": bestell_nr}), 200
-
-    except mysql.connector.Error as err:
-        print(f"Database error: {err}")
-        return jsonify({"error": str(err)}), 500
-
-    except Exception as e:
-        print(e)
-        print(f"General error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-    finally:
-        cursor.close()
-        conn.close()
-
-
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     print("session")
@@ -194,14 +121,17 @@ def checkout():
             bestell_nr = cursor.lastrowid
 
             # Step 2: Insert items into the `bestellung_artikel` table
+
             cart = data.get('cart', [])
             for item in cart:
                 artikel_id = item['artikel_id']
                 quantity = item['quantity']
-                cursor.execute("""
-                    INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
-                    VALUES (%s, %s)
-                """, (bestell_nr, artikel_id))
+
+                for _ in range(quantity):  # add multiple entries if quantity is > 1
+                    cursor.execute("""
+                        INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
+                        VALUES (%s, %s)
+                    """, (bestell_nr, artikel_id))
 
                 # Decrement stock in `artikel_raum`
                 cursor.execute("""

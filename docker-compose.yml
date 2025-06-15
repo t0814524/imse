@@ -1,8 +1,7 @@
 version: "3.3"
 services:
   mariadb:
-    # image: mariadb:latest
-    image: mariadb:10.5
+    image: mariadb:latest
     restart: always
     container_name: mariadb1
     environment:
@@ -12,15 +11,12 @@ services:
       MYSQL_ROOT_PASSWORD: "password"
     # command: --default-authentication-plugin=mysql_native_password # https://github.com/docker-library/mysql/issues/419 maybe works on linux vm or specific mysql image should be used? todo: check docker tutorial or assignment
     ports:
-      # <Port exposed> : <MySQL Port running inside container>
+      # exposed:inside container
       - "3333:3306"
     expose:
-      # Opens port 3306 on the container
       - "3306"
-      # Where our data will be persisted
     volumes:
       - mariadb_volume:/var/lib/mysql
-      # - ./imse_create.sql:/docker-entrypoint-initdb.d/imse_create.sql
       - ./sql:/docker-entrypoint-initdb.d/sql
       - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
     networks:

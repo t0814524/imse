@@ -149,6 +149,7 @@
   <script type="module" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
 
   <script>
+    // todo: error handling is shit / non existing here for the btn that says it worked
     // Handle "Create/Replace Dummy Data" click event
     document.getElementById('create-dummy-data').addEventListener('click', async () => {
       let res = await fetch('http://localhost:5555/dummy-data');

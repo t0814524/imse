@@ -24,18 +24,27 @@ def register_customer(data):
         cursor.execute("""
             INSERT INTO kunde (rechnungs_adresse_id, firmen_kunde, status_vip)
             VALUES (%s, %s, %s)
-        """, (adresse_id, False, False))
+        """, (adresse_id, data['firmen_kunde'], data['status_vip']))
         connection.commit()
 
         # Get the customer ID
         kunde_id = cursor.lastrowid
 
-        # Insert private customer details into privatkunde table
-        cursor.execute("""
-            INSERT INTO privatkunde (kunde_nr, vorname, nachname)
-            VALUES (%s, %s, %s)
-        """, (kunde_id, data['vorname'], data['nachname']))
-        connection.commit()
+        # If the customer is a business (firmen_kunde), insert into firmenkunde table
+        if data['firmen_kunde']:
+            cursor.execute("""
+                INSERT INTO firmenkunde (kunde_nr, firmen_name)
+                VALUES (%s, %s)
+            """, (kunde_id, data['business_name']))
+            connection.commit()
+
+        # If the customer is an individual (not a business), insert into privatkunde table
+        else:
+            cursor.execute("""
+                INSERT INTO privatkunde (kunde_nr, vorname, nachname)
+                VALUES (%s, %s, %s)
+            """, (kunde_id, data['vorname'], data['nachname']))
+            connection.commit()
 
         # Store user information in the session
         session['user_id'] = kunde_id
