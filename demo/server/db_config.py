@@ -20,7 +20,7 @@ db_config = {
 }
 
 # path_sql = "../../sql/"
-path_sql = "./app/sql"
+path_sql = "/app/sql"
 # path_sql = "./docker-entrypoint-initdb.d/sql"
 
 

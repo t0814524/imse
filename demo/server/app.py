@@ -177,28 +177,7 @@ def get_billing_address():
 def dummy_data():
     path_delete_data_sql = path_sql + "/delete_data.sql"
     path_create_dummy_data_sql = path_sql + "/create_dummy_data.sql"
-# todo:
-    # try:
-    #     conn = get_connection()
-    #     cursor = conn.cursor(dictionary=True)
 
-    #     # get address details
-    #     cursor.execute("""
-    #         SELECT land, stadt, strasse, haus_nr
-    #         FROM adresse
-    #         WHERE adresse_id = (SELECT rechnungs_adresse_id FROM kunde WHERE kunde_nr = %s)
-    #     """, (user_id,))
-    #     address = cursor.fetchone()
-
-    #     if not address:
-    #         return jsonify({"error": "Billing address not found"}), 404
-    #     return jsonify(address)
-
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
-    # finally:
-    #     cursor.close()
-    #     conn.close()
     execute_sql_script(path_delete_data_sql)
     execute_sql_script(path_create_dummy_data_sql)
     session.clear()
