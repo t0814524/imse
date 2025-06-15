@@ -1,15 +1,6 @@
 import mysql.connector
 import os
 
-# todo clean
-# db_config = {
-#     "host": "localhost",
-#     "port": 3333,
-#     "user": "user",
-#     "password": "password",
-#     "database": "db"
-# }
-
 # use env instead of hardcoding
 db_config = {
     "host": os.getenv("MYSQL_HOST", "localhost"),
@@ -25,6 +16,4 @@ path_sql = "/app/sql"
 
 
 def get_connection():
-    print("db_config")
-    print(db_config)
     return mysql.connector.connect(**db_config)

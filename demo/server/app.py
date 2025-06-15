@@ -138,8 +138,6 @@ def checkout():
             cursor.close()
             conn.close()
 
-    # GET method (render checkout page, passing customer info)
-    # return render_template('checkout.html', user_id=user_id, rechnungs_adresse_id=rechnungs_adresse_id) todo
     return render_template('checkout.html')
 
 
@@ -181,9 +179,6 @@ def dummy_data():
     execute_sql_script(path_delete_data_sql)
     execute_sql_script(path_create_dummy_data_sql)
     session.clear()
-
-    # print(mydb)
-    # execute_sql_script("../../sql/create_dummy_data.sql")  # todo: other path inside container
 
     return "created/replaced dummmy data"
 

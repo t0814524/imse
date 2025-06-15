@@ -9,7 +9,6 @@ services:
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
-    # command: --default-authentication-plugin=mysql_native_password # https://github.com/docker-library/mysql/issues/419 maybe works on linux vm or specific mysql image should be used? todo: check docker tutorial or assignment
     # ports:
     # exposed:inside container
     # - "3333:3306"
@@ -28,8 +27,7 @@ services:
       dockerfile: demo/server/Dockerfile # dockerfile location
     container_name: flask-app
     environment:
-      # MYSQL_URI: mongodb://mongo:27017
-      MYSQL_HOST: mariadb # This tells Flask to connect to the mariadb container by service name todo env
+      MYSQL_HOST: mariadb
       MYSQL_PORT: 3306
       MYSQL_USER: user
       MYSQL_PASSWORD: password
@@ -59,13 +57,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     # ports:
-    # - "27018:27017" # Expose MongoDB port
+    # - "27018:27017"
     volumes:
-      - mongo_volume:/data/db # Persist MongoDB data
+      - mongo_volume:/data/db
     networks:
       - app-network
 
-# Volumes to persist data for MariaDB and MongoDB
 volumes:
   mariadb_volume:
   # source ./docker-entrypoint-initdb.d/sql/imse_create.sql
