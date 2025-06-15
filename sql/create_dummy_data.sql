@@ -44,7 +44,7 @@ VALUES (NULL, 'Elektronik', '#FF0000');
 SET @cat1 = LAST_INSERT_ID();
 
 INSERT INTO kategorie (ueber_kategorie, bezeichnung, color_code)
-VALUES (NULL, 'Bücher', '#00FF00');
+VALUES (NULL, 'Buecher', '#00FF00');
 SET @cat2 = LAST_INSERT_ID();
 
 INSERT INTO kategorie (ueber_kategorie, bezeichnung, color_code)
@@ -60,7 +60,7 @@ INSERT INTO artikel (kategorie_nr, bezeichnung, preis_cent)
 VALUES (@cat1, 'Laptop', 80000);
 SET @art2 = LAST_INSERT_ID();
 
--- Kategorie 2 (Bücher), 2 artikel einfuegen:
+-- Kategorie 2 (Buecher), 2 artikel einfuegen:
 INSERT INTO artikel (kategorie_nr, bezeichnung, preis_cent)
 VALUES (@cat2, 'Database Design', 3500);
 SET @art3 = LAST_INSERT_ID();
@@ -91,16 +91,20 @@ COMMIT;
 -- Kunde, Bestellung, Bestellung_Artikel.
 START TRANSACTION;
 -- 3 Rechnungsadressen:
+SET @haus_nr_rand1 = FLOOR(1 + (RAND() * 100));
+SET @haus_nr_rand2 = FLOOR(1 + (RAND() * 100));
+SET @haus_nr_rand3 = FLOOR(1 + (RAND() * 100));
+
 INSERT INTO adresse (land, stadt, strasse, haus_nr)
-VALUES ('Österreich', 'Wien', 'Teststraße', '1B');
+VALUES ('Österreich', 'Wien', 'Teststraße', @haus_nr_rand1);
 SET @cust_addr1 = LAST_INSERT_ID();
 
 INSERT INTO adresse (land, stadt, strasse, haus_nr)
-VALUES ('Österreich', 'Graz', 'Marktplatz', '3B');
+VALUES ('Österreich', 'Graz', 'Marktplatz', @haus_nr_rand2);
 SET @cust_addr2 = LAST_INSERT_ID();
 
 INSERT INTO adresse (land, stadt, strasse, haus_nr)
-VALUES ('Österreich', 'Linz', 'Rathausplatz', '7');
+VALUES ('Österreich', 'Linz', 'Rathausplatz', @haus_nr_rand3);
 SET @cust_addr3 = LAST_INSERT_ID();
 
 -- 3 Kunden:
@@ -126,20 +130,25 @@ INSERT INTO privatkunde (kunde_nr, vorname, nachname)
 VALUES (@kunde3, 'Max', 'Mustermann');
 
 -- Bestellungen:
+-- randomize articel:
+SET @random_article1 = ELT(FLOOR(1 + (RAND() * 6)), @art1, @art2, @art3, @art4, @art5, @art6);
+SET @random_article2 = ELT(FLOOR(1 + (RAND() * 6)), @art1, @art2, @art3, @art4, @art5, @art6);
+SET @random_article3 = ELT(FLOOR(1 + (RAND() * 6)), @art1, @art2, @art3, @art4, @art5, @art6);
+
 -- Kunde 1:
 INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
 VALUES (@kunde1, @lager_addr1); 
 SET @bestell1 = LAST_INSERT_ID();
 INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
-VALUES (@bestell1, @art1),
-       (@bestell1, @art3);
+VALUES (@bestell1, @random_article1),
+       (@bestell1, @random_article2);
 
 -- Kunde 2:
 INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
 VALUES (@kunde2, @lager_addr2);
 SET @bestell2 = LAST_INSERT_ID();
 INSERT INTO bestellung_artikel (bestell_nr, artikel_nr)
-VALUES (@bestell2, @art5);
+VALUES (@bestell2, @random_article3);
 
 -- Kunde 3:
 INSERT INTO bestellung (kunde_nr, liefer_adresse_id)
