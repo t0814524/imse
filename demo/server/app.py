@@ -6,7 +6,7 @@ from register import register_customer
 from db_config import get_connection, path_sql
 from flask_session import Session
 import uuid
-# from migrate import migrate todo
+from migrate import migrate
 
 import mongo
 
@@ -187,7 +187,7 @@ def dummy_data():
 def _migrate():
     print("migrate data")
     migrate()
-    return "created/replaced dummmy data"
+    return "migrated data"
 
 
 @app.route('/report', methods=['GET'])
